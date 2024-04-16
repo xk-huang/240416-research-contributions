@@ -1,0 +1,18 @@
+FROM nvcr.io/nvidia/pytorch:23.07-py3
+# The version is torch==1.9.1
+# nvcr.io/nvidia/pytorch:21.10-py3 torch:1.10.0a0+0aef44c
+# nvcr.io/nvidia/pytorch:21.06-py3 torch:1.9.0a0+c3d40fd
+
+COPY requirements.txt /tmp/requirements.txt
+
+# Add grant sudo to host users that have sudo or docker.
+RUN apt-get update && apt-get install -y sudo && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    echo "%docker ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    echo "%sudo ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+RUN sed -i 's/^torch==1.9.1//' /tmp/requirements.txt && \
+    pip install -r /tmp/requirements.txt && \
+    rm -Rf /root/.cache/pip
+
